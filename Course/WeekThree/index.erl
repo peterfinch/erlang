@@ -1,16 +1,12 @@
 -module(index).
 -export([get_file_contents/1,show_file_contents/1,index/1,allWords/1,wordsInLine/1,firstOccuranceLine/3,getLine/2]).
 
-% Used to read a file into a list of lines.
-% Example files available in:
-%   gettysburg-address.txt (short)
-%   dickens-christmas.txt  (long)
-  
-
 index(Name)->
-    %firstOccuranceLine( "ghost"   ,allWords(splitLines(get_file_contents_reverse(Name))) , 0   ).
+    allWords(splitLines(get_file_contents(Name))).
     %allWordsAppended(splitLines(get_file_contents(Name))).
-    lists:flatten(get_file_contents(Name)).
+    %lists:flatten(get_file_contents(Name)).
+
+
 
 splitLines([])->
     [];
@@ -20,6 +16,7 @@ splitLines([X|Xs])->
 allWords([])->    
     [];    
 allWords([X|Xs])->
+
     [wordsInLine(X)|allWords(Xs)].
     
 wordsInLine({[]})->  
