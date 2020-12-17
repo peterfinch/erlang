@@ -1,12 +1,12 @@
 -module(index2).
 -compile(export_all).
 
-getWords(Name) ->
-     getWords(get_file_contents(Name),[]).
-getWords([H|T], ACC)->
-    getWords(T, [string:tokens(H, " ")|ACC]);
-getWords([],ACC) ->
-    ACC.
+%getWords(Name) ->
+%     getWords(get_file_contents(Name),[]).
+%getWords([H|T], ACC)->
+%    getWords(T, [string:tokens(H, " ")|ACC]);
+%getWords([],ACC) ->
+%    ACC.
 
 %doSomething(Name) ->
 %    doSomething(getWords(Name), []).
@@ -26,31 +26,25 @@ getWords([],ACC) ->
 %    findLineOccurances(Word, getWords(Name),[], 1).
 
 
+get_lines(Name)->
+    get_lines(get_file_contents(Name), " the ", [], 0).
 
-get_lines([X|Xs] , lineNumber, word ) ->
-    io:format("~p~n",[isMatch(word, X)]),
-    get_lines(Xs, lineNumber + 1, word); 
-get_lines([], lineNumber, word) ->
-    [].
-
-    
-
-isMatch(W, [W|Xs]) ->
-    true;  
-isMatch(W,[])->
-    false;
-isMatch(W, [X|Xs]) ->
-   %io:format("~p ~p ~n", [W, X]),
-   isMatch(W, Xs).
-
-
-
-    
+get_lines([X|Xs], Word, Occ, Line) ->
+    S = string:str(X, Word),
+    io:format("~p  ~p ~n",[S, X]),
+    case S of
+        0 -> get_lines(Xs, Word, Occ, Line+1);
+        _ -> get_lines(Xs, Word, [Line|Occ], Line+1)
+    end;  
+get_lines([], WORD, Occ, Line) ->
+    {WORD, Occ}.
+   
+  
  
 get_file_contents(Name) ->
     {ok,File} = file:open(Name,[read]),
-    get_all_lines(File,[]).
-    %lists:reverse(Rev).
+    Rev = get_all_lines(File,[]),
+    lists:reverse(Rev).
 
 get_all_lines(File,Partial) ->
     case io:get_line(File,"") of
