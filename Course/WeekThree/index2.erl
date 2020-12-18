@@ -1,46 +1,40 @@
 -module(index2).
 -compile(export_all).
 
-%getWords(Name) ->
-%     getWords(get_file_contents(Name),[]).
-%getWords([H|T], ACC)->
-%    getWords(T, [string:tokens(H, " ")|ACC]);
-%getWords([],ACC) ->
-%    ACC.
-
-%doSomething(Name) ->
-%    doSomething(getWords(Name), []).
-%doSomething([X|Xs], ACC)->
-%    doSomething(Xs, [processWords(X,[])|ACC]);    
-%doSomething([], ACC) ->
-%    ACC.
-   
-
-%processWords([X|Xs], ACC)->
-%    processWords(Xs, [string:concat(X, "hello")|ACC]); 
-%processWords([],ACC) ->
-%    ACC.
- 
-
-%findLineOccurances(Word, Name)->
-%    findLineOccurances(Word, getWords(Name),[], 1).
+getWords(Name) ->
+     getWords(get_file_contents(Name),[]).
+getWords([H|T], ACC)->
+    getWords(T, [string:strip(string:tokens(H, " "))|ACC]);
+getWords([],ACC) ->
+    S= sets:from_list(lists:merge(ACC)),
+    sets:to_list(S).
 
 
-get_lines(Name)->
-    get_lines(get_file_contents(Name), " the ", [], 0).
+
+
+doBla(Name)->
+    doBla(get_file_contents(Name), getWords(Name), []).
+doBla(List, [H|T], Acc) ->
+    doBla(List, T, [get_lines(List, H)|Acc]);
+doBla(_List, [], Acc) ->
+    S = sets:from_list(Acc),
+    sets:to_list(S).
+
+
+get_lines(List, Word)->
+    get_lines(List, Word, [], 1).
 
 get_lines([X|Xs], Word, Occ, Line) ->
     S = string:str(X, Word),
-    io:format("~p  ~p ~n",[S, X]),
+    %io:format("~p  ~p ~n",[S, X]),
     case S of
         0 -> get_lines(Xs, Word, Occ, Line+1);
         _ -> get_lines(Xs, Word, [Line|Occ], Line+1)
     end;  
-get_lines([], WORD, Occ, Line) ->
-    {WORD, Occ}.
-   
-  
- 
+get_lines([], WORD, Occ, _Line) ->
+    {WORD, lists:reverse(Occ)}.
+
+
 get_file_contents(Name) ->
     {ok,File} = file:open(Name,[read]),
     Rev = get_all_lines(File,[]),
