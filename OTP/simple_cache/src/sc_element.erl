@@ -21,7 +21,7 @@ fetch(Pid) -> gen_server:call(Pid, fetch).
 
 replace(Pid, Value) -> gen_server:cast(Pid, {replace, Value}).
 
-delete(Pid) -> gen_server:cast(Pid, delete
+delete(Pid) -> gen_server:cast(Pid, delete).
 
 init([Value, LeaseTime]) ->
     Now = calendar:local_time(),
